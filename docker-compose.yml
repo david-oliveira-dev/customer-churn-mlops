@@ -1,0 +1,41 @@
+# Orquestra a plataforma de churn: Postgres + API FastAPI + dashboard Streamlit.
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: churn
+      POSTGRES_PASSWORD: churn
+      POSTGRES_DB: churn
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U churn"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build: .
+    environment:
+      DATABASE_URL: postgresql+psycopg2://churn:churn@db:5432/churn
+      MODEL_PATH: models/churn_model.joblib
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  dashboard:
+    build: .
+    command: streamlit run app/dashboard.py --server.port 8501 --server.address 0.0.0.0
+    environment:
+      API_URL: http://api:8000
+    ports:
+      - "8501:8501"
+    depends_on:
+      - api
+
+volumes:
+  pgdata:
