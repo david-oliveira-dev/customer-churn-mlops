@@ -10,9 +10,11 @@ env/
 data/raw/*.csv
 data/processed/*.parquet
 data/processed/*.csv
+data/processed/*.db
 models/*.pkl
 models/*.joblib
 mlruns/
+mlflow.db
 
 # Notebooks
 .ipynb_checkpoints/
