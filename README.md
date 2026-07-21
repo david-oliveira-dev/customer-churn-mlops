@@ -15,6 +15,18 @@ Pleno**, com foco em qualidade de engenharia (testes, CI, reprodutibilidade).
 > não são comparáveis a benchmarks de dado real**; leia-as como validação de que o
 > pipeline funciona fim a fim, não como desempenho esperado em produção.
 
+## Contexto de negócio
+Reter é mais barato que adquirir, mas só compensa se a oferta de retenção chegar
+**antes** do cancelamento e **na pessoa certa** — desconto para quem ia ficar é
+margem jogada fora. O trabalho do modelo aqui é priorizar uma fila: dizer a quem
+o time de retenção deve ligar primeiro, com quanto tempo de antecedência.
+
+Isso muda a métrica. Numa base com ~27% de churn, **o falso negativo custa mais
+caro que o falso positivo**: um cliente perdido leva junto todo o faturamento
+futuro, enquanto um alarme falso custa uma ligação e, no pior caso, um desconto.
+Por isso o modelo é escolhido por **recall na classe churn**, não por acurácia
+nem por F1. Público-alvo: times de retenção em telecom e assinaturas.
+
 ## Stack
 Python 3.12 · Pandas/NumPy · scikit-learn · XGBoost · LightGBM · SHAP ·
 MLflow · FastAPI · Streamlit · SQLAlchemy/PostgreSQL · Docker · pytest
@@ -46,10 +58,20 @@ Comparação de 3 modelos em holdout (20%, 8.000 clientes sintéticos, seed 42):
 | XGBoost | 0.814 | 0.429 | 0.302 | 0.215 |
 | LightGBM | 0.808 | 0.408 | 0.466 | 0.652 |
 
+![Comparação dos modelos](reports/figures/comparacao_modelos.png)
+
 **RandomForest** foi escolhido: melhor ROC-AUC e, sobretudo, o maior **recall na
 classe churn** (0.73) — em retenção, deixar de identificar quem vai cancelar
-(falso negativo) custa mais caro do que um falso alarme. Interpretação global do
-modelo via SHAP em [`reports/shap_summary.png`](reports/shap_summary.png).
+(falso negativo) custa mais caro do que um falso alarme.
+
+O gráfico mostra por que o critério importa: **no F1 o vencedor seria outro**
+(LightGBM, 0.47 contra 0.46), e pelo PR-AUC seria o XGBoost. Escolher pela
+métrica errada aqui trocaria um modelo que captura 73% dos cancelamentos por um
+que captura 65% — ou, no caso do XGBoost, apenas 21%. A métrica de seleção é uma
+decisão de negócio, não um detalhe técnico.
+
+Interpretação global do modelo via SHAP em
+[`reports/shap_summary.png`](reports/shap_summary.png).
 
 ## Como rodar (local)
 ```bash
