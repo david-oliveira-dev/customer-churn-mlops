@@ -7,6 +7,14 @@ Pleno**, com foco em qualidade de engenharia (testes, CI, reprodutibilidade).
 
 ![CI](https://github.com/david-oliveira-dev/customer-churn-mlops/actions/workflows/ci.yml/badge.svg)
 
+> ⚠️ **Sobre os dados.** A base de clientes é **sintética**, gerada por
+> [`src/data/generate_synthetic.py`](src/data/generate_synthetic.py). A escolha é
+> deliberada: o objetivo é a **engenharia ponta a ponta** — ETL, features, tracking
+> de experimentos, serviço e monitoramento — e não a descoberta de um sinal novo.
+> Como o gerador planta os padrões que os modelos recuperam, **as métricas abaixo
+> não são comparáveis a benchmarks de dado real**; leia-as como validação de que o
+> pipeline funciona fim a fim, não como desempenho esperado em produção.
+
 ## Stack
 Python 3.12 · Pandas/NumPy · scikit-learn · XGBoost · LightGBM · SHAP ·
 MLflow · FastAPI · Streamlit · SQLAlchemy/PostgreSQL · Docker · pytest
